@@ -1,0 +1,58 @@
+name: 功能建议
+description: 新的训练范式、智能体能力或工程改进
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        建议先看 [路线图](../blob/main/docs/roadmap.md)，确认这个方向是否已在计划中。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 想解决的问题
+      description: 描述当前的限制，而不是直接给方案。
+      placeholder: 现在每步都用 FindGameObjectsWithTag 检索管道，多个环境并行时开销明显。
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 尽量指出落点（脚本、配置、场景）与预期影响。
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 影响范围
+      options:
+        - 智能体（观测 / 动作 / 奖励）
+        - 环境与随机化
+        - 训练配置与流程
+        - 工程与性能
+        - 文档与工具
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cost
+    attributes:
+      label: 预估改动量
+      options:
+        - 小（单个脚本或配置）
+        - 中（跨脚本，需要重新训练验证）
+        - 大（涉及场景结构或训练范式）
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 备选方案
+      description: 是否考虑过更简单的做法？为什么不采用？
+    validations:
+      required: false

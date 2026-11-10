@@ -1,0 +1,77 @@
+name: 缺陷报告
+description: 游戏行为、训练链路或文档与描述不符
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提交前请先查阅 [故障排查](../blob/main/docs/troubleshooting.md)，
+        很多问题（观测恒定、端口占用、模型未加载）已有明确处理步骤。
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 现象
+      description: 实际发生了什么？尽量给出可观察的证据（控制台日志、截图、指标曲线）。
+      placeholder: 选择 AI 模式后，小鸟只做自由落体，控制台提示 BehaviorParameters.Model 为空。
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+      placeholder: 加载 Assets/Model/FlappyBirdBrain.onnx 后，小鸟应能自主穿越管道。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      value: |
+        1. 打开工程并进入 MainMenuScene
+        2. 点击 Play，选择 ...
+        3. 观察到 ...
+    validations:
+      required: true
+
+  - type: input
+    id: unity-version
+    attributes:
+      label: Unity 版本
+      placeholder: 2023.2.20f1c1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: 出问题的模式
+      options:
+        - AI 模式（推理）
+        - 简单模式（手动）
+        - 困难模式（手动）
+        - 训练（mlagents-learn）
+        - 与游戏无关（文档 / 脚本 / CI）
+    validations:
+      required: true
+
+  - type: textarea
+    id: env
+    attributes:
+      label: 环境信息
+      description: 操作系统、Python 与 mlagents 版本、是否使用 GPU；可附 `python scripts/check_env.py` 输出。
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 相关日志
+      description: 粘贴控制台或终端输出的关键片段，注意先去掉本机绝对路径与个人信息。
+      render: text
+    validations:
+      required: false

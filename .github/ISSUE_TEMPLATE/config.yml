@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 故障排查文档
+    url: https://github.com/424635328/FlappyBird3D_AI/blob/main/docs/troubleshooting.md
+    about: 训练连不上、观测恒定、模型未加载等常见问题先看这里
+  - name: 环境准备与版本矩阵
+    url: https://github.com/424635328/FlappyBird3D_AI/blob/main/docs/setup.md
+    about: Unity、Python、mlagents 版本不匹配时先看这里
