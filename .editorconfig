@@ -1,0 +1,29 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# 文档与配置：两空格缩进更易读，且与常见工具输出一致
+[*.{md,markdown,yml,yaml,json}]
+indent_size = 2
+
+# Markdown 行尾两个空格是「硬换行」，不能被裁掉
+[*.{md,markdown}]
+trim_trailing_whitespace = false
+
+# PowerShell：Windows PowerShell 5.1 需要 BOM 才能正确识别 UTF-8 中文
+[*.ps1]
+charset = utf-8-bom
+end_of_line = crlf
+
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# Unity 序列化的 YAML 使用两空格缩进
+[*.{unity,prefab,asset,meta,mat,controller,anim}]
+indent_size = 2

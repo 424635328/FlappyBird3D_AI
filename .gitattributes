@@ -1,0 +1,44 @@
+# ============================================================================
+# 换行与文本判定
+#   - 仓库内一律以 LF 存储，避免 Windows / macOS / Linux 之间产生假 diff
+#   - 需要在 Windows 上运行的脚本在检出时转回 CRLF
+#   - 二进制文件显式标记，禁止 Git 尝试做文本转换
+# ============================================================================
+* text=auto eol=lf
+
+# --- 按平台锁定换行的脚本 -------------------------------------------------
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.sh text eol=lf
+
+# --- Unity 的 YAML 资产（保持文本化，便于 review 与合并） ------------------
+*.unity text=auto eol=lf
+*.prefab text=auto eol=lf
+*.asset text=auto eol=lf
+*.meta text=auto eol=lf
+*.mat text=auto eol=lf
+*.controller text=auto eol=lf
+*.anim text=auto eol=lf
+
+# --- 二进制 -----------------------------------------------------------------
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.tga binary
+*.psd binary
+*.exr binary
+*.hdr binary
+*.fbx binary
+*.wav binary
+*.ogg binary
+*.mp3 binary
+*.onnx binary
+*.pt binary
+*.nn binary
+*.mp4 binary
+*.dll binary
+*.so binary
+*.bundle binary
+*.zip binary
