@@ -1,0 +1,43 @@
+# =============================================================================
+# FlappyBird3D_AI · PPO 训练配置
+#
+# 用法：
+#   mlagents-learn config/flappybird_config.yaml --run-id=<RUN_ID> --force
+#   mlagents-learn config/flappybird_config.yaml --run-id=<RUN_ID> --resume
+#
+# 约定：
+#   - 第一层键必须与 Behavior Parameters 的 Behavior Name 一致（FlappyBirdBrain）
+#   - buffer_size 必须是 batch_size 的整数倍
+#   - 冒烟测试时先把 max_steps 调到 50000、summary_freq 调到 2000
+# =============================================================================
+behaviors:
+  FlappyBirdBrain:
+    trainer_type: ppo
+
+    hyperparameters:
+      batch_size: 1024          # 每次梯度更新的样本数
+      buffer_size: 20480        # 经验池容量（batch_size 的整数倍）
+      learning_rate: 0.0003     # 线性衰减
+      learning_rate_schedule: linear
+      beta: 0.05                # 熵正则强度，控制探索
+      beta_schedule: linear
+      epsilon: 0.2              # PPO 裁剪范围
+      epsilon_schedule: linear
+      lambd: 0.95               # GAE 折扣
+      num_epoch: 2              # 每批数据的更新轮数
+
+    network_settings:
+      normalize: true           # 观测标准化
+      hidden_units: 128
+      num_layers: 2
+
+    reward_signals:
+      extrinsic:
+        gamma: 0.99             # 奖励折扣
+        strength: 1.0
+
+    keep_checkpoints: 50
+    max_steps: 15000000         # 环境随机化需要更多样本，冒烟阶段请下调
+    time_horizon: 256
+    summary_freq: 20000
+    threaded: true

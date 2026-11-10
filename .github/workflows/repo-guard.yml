@@ -1,0 +1,44 @@
+name: repo-guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repo-guard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hygiene:
+    name: 仓库规范检查
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 检查编码 / 换行 / 敏感信息 / 体积 / 链接 / JSON
+        run: python scripts/check_repo.py
+
+      - name: 校验训练配置可被解析
+        run: |
+          python - <<'PY'
+          import pathlib, sys
+          text = pathlib.Path("config/flappybird_config.yaml").read_text(encoding="utf-8")
+          assert "FlappyBirdBrain:" in text, "缺少 FlappyBirdBrain 行为配置"
+          assert "trainer_type: ppo" in text, "训练器类型不是 ppo"
+          for key in ("batch_size", "buffer_size", "max_steps", "time_horizon"):
+              assert key in text, f"缺少关键超参数 {key}"
+          print("training config: ok")
+          PY
