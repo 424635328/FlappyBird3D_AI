@@ -65,7 +65,7 @@ mlagents-learn config/flappybird_config.yaml --run-id=FlappyBird_Tune --force
 
 ```powershell
 ./scripts/train.ps1 -RunId FlappyBird_Headless -NumEnvs 5 `
-  -Env "E:\Builds\FlappyBird3D_AI\FlappyBird3D_AI.exe" -Headless
+  -Env "<构建产物目录>\FlappyBird3D_AI.exe" -Headless
 ```
 
 等价的手工命令：

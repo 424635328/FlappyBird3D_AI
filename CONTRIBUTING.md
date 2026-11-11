@@ -63,6 +63,7 @@ git add --renormalize .
 ## 5. 提交前检查清单
 
 - [ ] `python scripts/check_repo.py` 退出码为 0
+- [ ] 准备发布或重写历史前，跑一次 `python scripts/check_repo.py --history`
 - [ ] Unity 控制台无新增报错，`MainMenuScene` → 三种模式都能进入
 - [ ] 若改动观测/动作/奖励，同步更新 `Behavior Parameters` 设置与 [docs/architecture.md](docs/architecture.md)
 - [ ] 若改动训练参数，同步更新 [docs/training.md](docs/training.md) 的配置表

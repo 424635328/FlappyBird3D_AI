@@ -157,7 +157,7 @@ FlappyBird3D_AI/
 ├─ config/             flappybird_config.yaml（PPO 训练配置）
 ├─ Packages/           UPM 清单与锁文件（ML-Agents 走官方 registry）
 ├─ ProjectSettings/    Unity 工程设置（Build Settings 已含两个场景）
-├─ docs/               架构、训练、排错、路线图、答辩提纲、历史搭建笔记
+├─ docs/               架构、训练、排错、路线图、汇报提纲、历史搭建笔记
 ├─ scripts/            check_env.py · check_repo.py · train.ps1
 └─ .github/            CI 门禁、Issue / PR 模板
 ```

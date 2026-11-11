@@ -21,15 +21,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: 检查编码 / 换行 / 敏感信息 / 体积 / 链接 / JSON
+      - name: 检查编码 / 换行 / 敏感信息 / 身份信息 / 二进制 / 体积 / 链接 / JSON
         run: python scripts/check_repo.py
+
+      - name: 扫描 Git 历史中的敏感信息
+        run: python scripts/check_repo.py --history
 
       - name: 校验训练配置可被解析
         run: |
