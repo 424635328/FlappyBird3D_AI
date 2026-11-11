@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### 文档
+
+- `docs/troubleshooting.md` 增加「合并后验收（Unity 侧）」清单：依赖解析、音频导入、播放列表、构建场景、三种模式与 AI 表现。
+
 ### 计划中
 
 - 管道对象池与管道注册表，替代每步 `FindGameObjectsWithTag`
