@@ -47,3 +47,27 @@
 1. **先证明观测是对的**：临时在 `CollectObservations` 末尾打一条 `Debug.Log`，确认 12 个值随游戏状态变化；若恒定，问题在检索（标签/预制体），不在训练。
 2. **再证明奖励是对的**：在 `AddReward` 前后打日志，确认撞管给负、过管给正；两条通路（`OnCollisionEnter` / `OnTriggerEnter`）都要验。
 3. **最后才怀疑超参数**：链路正确时，奖励曲线通常能在几十万步内看到方向性变化；链路上限不明时调参只会放大噪声。
+
+## 合并后验收（Unity 侧）
+
+CI 只覆盖文本、配置与工程一致性；以下步骤必须在 Unity 中人工确认，建议在合并后的 `main` 上逐条打勾：
+
+| # | 检查项 | 操作 | 期望 |
+| --- | --- | --- | --- |
+| 1 | 依赖解析 | 用 `2023.2.20f1c1` 打开工程，等 Package Manager 结束 | 无报错；`Packages/packages-lock.json` 里没有 `local` 源 |
+| 2 | 音频导入 | 选中 `Assets/8Bit Music - 062022/` 下任一 `.ogg` | Inspector 显示 AudioClip，无导入错误 |
+| 3 | 播放列表 | 打开 `Assets/Prefabs/scenes/GameManager.prefab` | `musicPlaylist` 的 9 个槽位全部非空 |
+| 4 | 入口场景 | File → Build Settings | `MainMenuScene`(0) 与 `GameScene`(1) 都在列表中且启用 |
+| 5 | 构建 | 构建 Windows x86_64 到 `Builds/` | 无编译错误，启动后进入主菜单 |
+| 6 | 三种模式 | 依次进入简单 / 困难 / AI 模式 | 三种都能开始对局，AI 模式不回落为简单模式 |
+| 7 | AI 表现 | AI 模式连续观察 10 个回合 | 多数回合能持续过管；单回合偶然成功不算通过 |
+| 8 | 控制台 | 观察 Console | 无 `NullReferenceException`，无 `PipePair`/`ScoreTrigger` 标签缺失警告 |
+
+命令行可复现的部分（CI 已覆盖）可再跑一次：
+
+```bash
+python scripts/check_repo.py --history
+```
+
+第 7 项不通过时，按上文「定位问题的通用方法」从观测、奖励、超参数逐层排查，不要直接换模型。
+

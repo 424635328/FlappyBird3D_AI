@@ -180,7 +180,7 @@ FlappyBird3D_AI/
 | [docs/setup.md](docs/setup.md) | 环境准备、打开工程、构建可执行文件 |
 | [docs/architecture.md](docs/architecture.md) | 场景结构、脚本职责、决策与奖励时序 |
 | [docs/training.md](docs/training.md) | 训练参数、冒烟流程、续训、TensorBoard、模型部署 |
-| [docs/troubleshooting.md](docs/troubleshooting.md) | 典型故障与排查路径 |
+| [docs/troubleshooting.md](docs/troubleshooting.md) | 典型故障、排查路径与合并后验收清单 |
 | [docs/roadmap.md](docs/roadmap.md) | 可继续做的方向（对抗训练、视觉输入、课程学习……） |
 | [docs/report.md](docs/report.md) | 项目汇报提纲（10 分钟版） |
 | [docs/legacy/build-guide.md](docs/legacy/build-guide.md) | 早期从零搭建笔记（历史存档） |
