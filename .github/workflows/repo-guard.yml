@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1'
 
 permissions:
   contents: read
@@ -13,32 +15,157 @@ concurrency:
   group: repo-guard-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PYTHONUTF8: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+
 jobs:
   hygiene:
-    name: 仓库规范检查
+    name: 规范 · 编码/换行/体积/链接
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
+      - name: 执行检查
+        run: python scripts/check_repo.py --group hygiene --json reports/hygiene.json
+      - name: 保存报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-hygiene
+          path: reports/hygiene.json
+          if-no-files-found: ignore
+          retention-days: 7
 
-      - name: 检查编码 / 换行 / 敏感信息 / 体积 / 链接 / JSON
-        run: python scripts/check_repo.py
+  secrets:
+    name: 脱敏 · 凭据/路径/身份信息
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 执行检查
+        run: python scripts/check_repo.py --group secrets --json reports/secrets.json
+      - name: 保存报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-secrets
+          path: reports/secrets.json
+          if-no-files-found: ignore
+          retention-days: 7
 
-      - name: 校验训练配置可被解析
+  project:
+    name: 工程一致性 · UPM/构建场景/训练配置
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 执行检查
+        run: python scripts/check_repo.py --group project --json reports/project.json
+      - name: 保存报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-project
+          path: reports/project.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+  scripts:
+    name: 脚本 · Python 语法/PS 语法
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 执行检查
+        run: python scripts/check_repo.py --group scripts --json reports/scripts.json
+      - name: PowerShell 语法
+        shell: pwsh
         run: |
-          python - <<'PY'
-          import pathlib, sys
-          text = pathlib.Path("config/flappybird_config.yaml").read_text(encoding="utf-8")
-          assert "FlappyBirdBrain:" in text, "缺少 FlappyBirdBrain 行为配置"
-          assert "trainer_type: ppo" in text, "训练器类型不是 ppo"
-          for key in ("batch_size", "buffer_size", "max_steps", "time_horizon"):
-              assert key in text, f"缺少关键超参数 {key}"
-          print("training config: ok")
-          PY
+          $files = Get-ChildItem -Path scripts -Filter *.ps1
+          foreach ($file in $files) {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              $file.FullName, [ref]$tokens, [ref]$errors)
+            if ($errors.Count -gt 0) {
+              throw "$($file.Name): $($errors[0].Message)"
+            }
+          }
+          Write-Host "PowerShell 语法 OK（$($files.Count) 个文件）"
+      - name: 保存报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-scripts
+          path: reports/scripts.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+  history:
+    name: 历史 · 全量提交脱敏
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout（完整历史）
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 执行检查
+        run: python scripts/check_repo.py --group history --json reports/history.json
+      - name: 保存报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-history
+          path: reports/history.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+  summary:
+    name: 汇总
+    needs: [hygiene, secrets, project, scripts, history]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: 写入汇总
+        run: |
+          {
+            echo "## repo-guard 汇总"
+            echo ""
+            echo "| 门禁 | 结果 |"
+            echo "| --- | --- |"
+            echo "| 规范（hygiene） | ${{ needs.hygiene.result }} |"
+            echo "| 脱敏（secrets） | ${{ needs.secrets.result }} |"
+            echo "| 工程一致性（project） | ${{ needs.project.result }} |"
+            echo "| 脚本（scripts） | ${{ needs.scripts.result }} |"
+            echo "| 历史（history） | ${{ needs.history.result }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: 任一失败则整体失败
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1

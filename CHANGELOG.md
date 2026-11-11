@@ -41,4 +41,6 @@
 
 - 新增 `.gitattributes`、`.editorconfig`、Unity 工程专用 `.gitignore`。
 - 新增 `scripts/check_env.py`（训练环境自检）、`scripts/check_repo.py`（仓库规范自检）、`scripts/train.ps1`（训练封装）。
+- 脱敏闸门覆盖：凭据、本机绝对路径、身份信息（手机号 / 身份证校验位 / QQ / 微信 / 学号 / 邮箱白名单）、二进制内嵌字符串、Git 历史。
+- CI 拆分为五个并行门禁（规范 / 脱敏 / 工程一致性 / 脚本 / 历史），失败时输出步骤摘要与 JSON 报告（保留 7 天），并支持每周定时扫描。
 - 新增 CI 门禁 `.github/workflows/repo-guard.yml`，以及 Issue / PR 模板。

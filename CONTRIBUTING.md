@@ -63,6 +63,7 @@ git add --renormalize .
 ## 5. 提交前检查清单
 
 - [ ] `python scripts/check_repo.py` 退出码为 0
+- [ ] 准备发布或重写历史前，跑一次 `python scripts/check_repo.py --history`
 - [ ] Unity 控制台无新增报错，`MainMenuScene` → 三种模式都能进入
 - [ ] 若改动观测/动作/奖励，同步更新 `Behavior Parameters` 设置与 [docs/architecture.md](docs/architecture.md)
 - [ ] 若改动训练参数，同步更新 [docs/training.md](docs/training.md) 的配置表
@@ -71,7 +72,7 @@ git add --renormalize .
 ## 6. PR 流程
 
 1. 推送分支后发起 PR，填写模板中的"改了什么 / 怎么验证 / 风险"。
-2. CI（`repo-guard`）会自动运行仓库规范检查，红叉时按日志修复。
+2. CI（`repo-guard`）并行运行五个门禁：规范、脱敏、工程一致性、脚本、历史。红叉时先看 PR 的步骤摘要（已定位到文件与规则），再点进对应 job 的日志；`reports/*.json` 会作为 Artifact 保留 7 天。
 3. 涉及行为变更的 PR，请附一段可复现的验证记录（命令、观察到的指标、截图均可）。
 4. 合并方式为 Squash，合并信息使用 PR 标题。
 
